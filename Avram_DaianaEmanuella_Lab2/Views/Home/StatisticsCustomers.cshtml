@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Avram_DaianaEmanuella_Lab2.Models.LibraryViewModels.CustomersGroup>
+@{
+    ViewData["Title"] = "Ordered Books Statistics for Customers";
+}
+<h2>Ordered Books Statistics</h2>
+<table>
+    <tr>
+        <th>
+            Customer Name
+        </th>
+        <th>
+            Ordered Books
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerName)
+            </td>
+            <td>
+                @item.BookCount
+            </td>
+        </tr>
+    }
+
+</table>

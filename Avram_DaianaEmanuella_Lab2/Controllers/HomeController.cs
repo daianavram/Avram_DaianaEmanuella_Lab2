@@ -35,7 +35,38 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
             return View(await data.AsNoTracking().ToListAsync());
         }
 
-        
+        public async Task<ActionResult> StatisticsCustomers()
+        {
+            IQueryable<CustomersGroup> data =
+            from order in _context.Orders
+            group order by order.Customer.Name into customerGroup
+            select new CustomersGroup()
+            {
+                CustomerName = customerGroup.Key,
+                BookCount = customerGroup.Count()
+            };
+            return View(await data.AsNoTracking().ToListAsync());
+        }
+        /*
+        public async Task<ActionResult> StatisticsNameCustomers()
+        {
+            IQueryable<CustomersGroup> data =
+            from order in _context.Orders
+            group order by order.CustomerID into customerGroup
+
+            IQueryable<CustomersGroup> dataName =
+            from customer in _context.Customers
+            group customer by customer.Name into customerNameGroup
+            select new CustomersGroup()
+            {
+                CustomerID = customerGroup.Key,
+                CustomerName = customerNameGroup.Key
+                BookCount = customerGroup.Count()
+            };
+            return View(await data.AsNoTracking().ToListAsync());
+        }
+        */
+
         private readonly ILogger<HomeController> _logger;
 
         /*

@@ -13,6 +13,7 @@ namespace Avram_DaianaEmanuella_Lab2.Models
         public string Author { get; set; }
         [Column(TypeName = "decimal(6, 2)")]
         public decimal Price { get; set; }
+
         public ICollection<Order> Orders { get; set; }
         public ICollection<PublishedBook> PublishedBooks { get; set; }
     }

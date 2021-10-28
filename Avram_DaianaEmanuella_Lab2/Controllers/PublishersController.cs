@@ -23,6 +23,7 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         // GET: Publishers
         public async Task<IActionResult> Index(int? id, int? bookID)
         {
+
             var viewModel = new PublisherIndexData();
             viewModel.Publishers = await _context.Publishers
             .Include(i => i.PublishedBooks)
