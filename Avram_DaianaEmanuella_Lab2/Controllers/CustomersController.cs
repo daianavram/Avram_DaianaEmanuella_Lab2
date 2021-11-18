@@ -8,11 +8,17 @@ using Microsoft.EntityFrameworkCore;
 using Avram_DaianaEmanuella_Lab2.Data;
 using Avram_DaianaEmanuella_Lab2.Models;
 
+using System.Net.Http;
+using System.Text;
+using Newtonsoft.Json;
+
 namespace Avram_DaianaEmanuella_Lab2.Controllers
 {
     public class CustomersController : Controller
     {
         private readonly LibraryContext _context;
+        private string _baseUrl = "http://localhost:46174/api/Customers";
+
 
         public CustomersController(LibraryContext context)
         {
@@ -20,28 +26,19 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index(string currentFilter, string searchString, int? pageNumber)
+        public async Task<IActionResult> Index()
         {
-            if (searchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
+            var client = new HttpClient();
+            var response = await client.GetAsync(_baseUrl);
 
-            ViewData["CurrentFilter"] = searchString;
-            var customers = from c in _context.Customers
-                        select c;
-            if (!String.IsNullOrEmpty(searchString))
+            if (response.IsSuccessStatusCode)
             {
-                customers = customers.Where(s => s.Name.Contains(searchString));
-                 
+                var customers = JsonConvert.DeserializeObject<List<Customer>>(await
+               response.Content.
+                ReadAsStringAsync());
+                return View(customers);
             }
-            int pageSize = 2;
-            return View(await PaginatedList<Customer>.CreateAsync(customers.AsNoTracking(), pageNumber ??
-           1, pageSize));
+            return NotFound();
 
 
         }
@@ -51,17 +48,17 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new BadRequestResult();
             }
-
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.CustomerID == id);
-            if (customer == null)
+            var client = new HttpClient();
+            var response = await client.GetAsync($"{_baseUrl}/{id.Value}");
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var customer = JsonConvert.DeserializeObject<Customer>(
+                await response.Content.ReadAsStringAsync());
+                return View(customer);
             }
-
-            return View(customer);
+            return NotFound();
         }
 
         // GET: Customers/Create
@@ -77,11 +74,21 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CustomerID,Name,Address,BirthDate")] Customer customer)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(customer);
+            try
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var client = new HttpClient();
+                string json = JsonConvert.SerializeObject(customer);
+                var response = await client.PostAsync(_baseUrl,
+                new StringContent(json, Encoding.UTF8, "application/json"));
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Unable to create record:{ ex.Message}");
             }
             return View(customer);
         }
@@ -91,15 +98,17 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new BadRequestResult();
             }
-
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            var client = new HttpClient();
+            var response = await client.GetAsync($"{_baseUrl}/{id.Value}");
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var customer = JsonConvert.DeserializeObject<Customer>(
+                await response.Content.ReadAsStringAsync());
+                return View(customer);
             }
-            return View(customer);
+            return new NotFoundResult();
         }
 
         // POST: Customers/Edit/5
@@ -109,30 +118,14 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CustomerID,Name,Address,BirthDate")] Customer customer)
         {
-            if (id != customer.CustomerID)
+            if (!ModelState.IsValid) return View(customer);
+            var client = new HttpClient();
+            string json = JsonConvert.SerializeObject(customer);
+            var response = await client.PutAsync($"{_baseUrl}/{customer.CustomerID}",
+            new StringContent(json, Encoding.UTF8, "application/json"));
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(customer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CustomerExists(customer.CustomerID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             return View(customer);
         }
@@ -142,28 +135,42 @@ namespace Avram_DaianaEmanuella_Lab2.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new BadRequestResult();
             }
-
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.CustomerID == id);
-            if (customer == null)
+            var client = new HttpClient();
+            var response = await client.GetAsync($"{_baseUrl}/{id.Value}");
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var customer = JsonConvert.DeserializeObject<Customer>(await
+               response.Content.ReadAsStringAsync());
+                return View(customer);
             }
-
-            return View(customer);
+            return new NotFoundResult();
         }
 
         // POST: Customers/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<ActionResult> Delete([Bind("CustomerID")] Customer customer)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var client = new HttpClient();
+                HttpRequestMessage request =
+                new HttpRequestMessage(HttpMethod.Delete,
+               $"{_baseUrl}/{customer.CustomerID}")
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(customer),
+               Encoding.UTF8, "application/json")
+                };
+                var response = await client.SendAsync(request);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Unable to delete record: { ex.Message}");
+            }
+            return View(customer);
         }
 
         private bool CustomerExists(int id)
