@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avram_DaianaEmanuella_Lab2.Data;
 using Microsoft.EntityFrameworkCore;
+using Avram_DaianaEmanuella_Lab2.Hubs;
 
 namespace Avram_DaianaEmanuella_Lab2
 {
@@ -27,6 +28,7 @@ namespace Avram_DaianaEmanuella_Lab2
         {
             services.AddControllersWithViews();
             services.AddDbContext<LibraryContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddSignalR();
 
         }
 
@@ -55,7 +57,10 @@ namespace Avram_DaianaEmanuella_Lab2
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/chathub");
+
             });
+
         }
     }
 }
