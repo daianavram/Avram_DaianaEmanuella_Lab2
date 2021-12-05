@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Avram_DaianaEmanuella_Lab2.Data;
 using Microsoft.EntityFrameworkCore;
 using Avram_DaianaEmanuella_Lab2.Hubs;
+using Microsoft.AspNetCore.Identity;
 
 namespace Avram_DaianaEmanuella_Lab2
 {
@@ -28,6 +29,14 @@ namespace Avram_DaianaEmanuella_Lab2
         {
             services.AddControllersWithViews();
             services.AddDbContext<LibraryContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+            });
             services.AddSignalR();
 
         }
@@ -50,6 +59,7 @@ namespace Avram_DaianaEmanuella_Lab2
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -58,7 +68,7 @@ namespace Avram_DaianaEmanuella_Lab2
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHub<ChatHub>("/chathub");
-
+                endpoints.MapRazorPages();
             });
 
         }
