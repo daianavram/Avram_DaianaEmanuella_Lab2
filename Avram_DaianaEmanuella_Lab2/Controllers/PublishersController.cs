@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Avram_DaianaEmanuella_Lab2.Data;
 using Avram_DaianaEmanuella_Lab2.Models;
 using Avram_DaianaEmanuella_Lab2.Models.LibraryViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Avram_DaianaEmanuella_Lab2.Controllers
 {
+    [Authorize(Policy = "OnlySales")]
     public class PublishersController : Controller
     {
         private readonly LibraryContext _context;

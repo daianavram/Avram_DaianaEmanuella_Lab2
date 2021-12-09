@@ -29,6 +29,9 @@ namespace Avram_DaianaEmanuella_Lab2
         {
             services.AddControllersWithViews();
             services.AddDbContext<LibraryContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddSignalR();
+            services.AddRazorPages();
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
@@ -37,7 +40,12 @@ namespace Avram_DaianaEmanuella_Lab2
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
             });
-            services.AddSignalR();
+
+            services.AddAuthorization(opts => {
+                opts.AddPolicy("OnlySales", policy => {
+                    policy.RequireClaim("Department", "Sales");
+                });
+            });
 
         }
 
