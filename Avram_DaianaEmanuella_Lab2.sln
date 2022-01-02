@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryWebApi", "LibraryWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avram_Daiana_Lab10", "Avram_Daiana_Lab10\Avram_Daiana_Lab10.csproj", "{B5299E54-A84B-4C15-92A2-5ECBD87A3C70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gRPCClient", "gRPCClient\gRPCClient.csproj", "{00132EC4-9D6F-401A-B79B-E386CA37B231}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gRPCClient", "gRPCClient\gRPCClient.csproj", "{00132EC4-9D6F-401A-B79B-E386CA37B231}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcCustomersService", "GrpcCustomersService\GrpcCustomersService.csproj", "{8FCBAB18-E5C8-4331-8635-A3AD470384C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{00132EC4-9D6F-401A-B79B-E386CA37B231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00132EC4-9D6F-401A-B79B-E386CA37B231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00132EC4-9D6F-401A-B79B-E386CA37B231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FCBAB18-E5C8-4331-8635-A3AD470384C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FCBAB18-E5C8-4331-8635-A3AD470384C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FCBAB18-E5C8-4331-8635-A3AD470384C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FCBAB18-E5C8-4331-8635-A3AD470384C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
