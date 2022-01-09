@@ -11,6 +11,7 @@ namespace Avram_DaianaEmanuella_Lab2.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
+        [Authorize]
         public async Task SendMessage(string user, string message)
         {
             await Clients.All.SendAsync("ReceiveMessage", Context.User.Identity.Name, message);

@@ -44,6 +44,7 @@ namespace Avram_DaianaEmanuella_Lab2
             services.AddAuthorization(opts => {
                 opts.AddPolicy("OnlySales", policy => {
                     policy.RequireClaim("Department", "Sales");
+                    policy.RequireRole("Employee");
                 });
             });
 
@@ -53,6 +54,8 @@ namespace Avram_DaianaEmanuella_Lab2
                     policy.RequireClaim("Department", "Sales");
                 });
             });
+
+
             services.ConfigureApplicationCookie(opts =>
             {
                 opts.AccessDeniedPath = "/Identity/Account/AccessDenied";
